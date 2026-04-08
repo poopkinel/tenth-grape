@@ -1,0 +1,194 @@
+// Meeple – Board Game Partner Finder
+// Prisma schema for PostgreSQL + PostGIS
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Users & Profiles ─────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String?
+  googleId     String?  @unique
+  name         String
+  avatar       String?
+  // Location stored as PostGIS geography point via raw SQL; lat/lng for Prisma reads
+  lat          Float?
+  lng          Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile             Profile?
+  games               UserGame[]
+  sentLikes           Like[]          @relation("SentLikes")
+  receivedLikes       Like[]          @relation("ReceivedLikes")
+  matchesAsUser1      Match[]         @relation("MatchUser1")
+  matchesAsUser2      Match[]         @relation("MatchUser2")
+  sentMessages        Message[]
+  hostedSessions      Session[]
+  sessionParticipants SessionParticipant[]
+
+  @@map("users")
+}
+
+model Profile {
+  id               String           @id @default(cuid())
+  userId           String           @unique
+  bio              String?
+  gamingFrequency  GamingFrequency  @default(CASUAL)
+  languages        String[]
+  maxTravelKm      Int              @default(25)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+// ─── Games ────────────────────────────────────────────────────────────────────
+
+model Game {
+  bggId       Int      @id
+  title       String
+  description String?
+  minPlayers  Int      @default(1)
+  maxPlayers  Int      @default(4)
+  minPlaytime Int?
+  maxPlaytime Int?
+  weight      Float    @default(2.5) // 1 (light) – 5 (heavy)
+  thumbnail   String?
+  categories  String[]
+  createdAt   DateTime @default(now())
+
+  userGames       UserGame[]
+  sessionGames    Session[]
+
+  @@map("games")
+}
+
+model UserGame {
+  userId        String
+  bggId         Int
+  ownership     GameOwnership @default(OWN)
+  personalRating Float?
+  addedAt       DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [bggId], references: [bggId], onDelete: Cascade)
+
+  @@id([userId, bggId])
+  @@map("user_games")
+}
+
+// ─── Matching ─────────────────────────────────────────────────────────────────
+
+model Like {
+  id         String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  createdAt  DateTime @default(now())
+
+  fromUser User @relation("SentLikes", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("ReceivedLikes", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId])
+  @@map("likes")
+}
+
+model Match {
+  id        String      @id @default(cuid())
+  userId1   String
+  userId2   String
+  status    MatchStatus @default(MATCHED)
+  createdAt DateTime    @default(now())
+
+  user1    User      @relation("MatchUser1", fields: [userId1], references: [id], onDelete: Cascade)
+  user2    User      @relation("MatchUser2", fields: [userId2], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@unique([userId1, userId2])
+  @@map("matches")
+}
+
+// ─── Messaging ────────────────────────────────────────────────────────────────
+
+model Message {
+  id        String    @id @default(cuid())
+  matchId   String
+  senderId  String
+  content   String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  match  Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+// ─── Sessions ─────────────────────────────────────────────────────────────────
+
+model Session {
+  id           String   @id @default(cuid())
+  hostId       String
+  bggId        Int?
+  title        String
+  scheduledAt  DateTime
+  locationText String
+  lat          Float
+  lng          Float
+  maxPlayers   Int      @default(4)
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  host         User                 @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  game         Game?                @relation(fields: [bggId], references: [bggId])
+  participants SessionParticipant[]
+
+  @@map("sessions")
+}
+
+model SessionParticipant {
+  sessionId String
+  userId    String
+  status    SessionParticipantStatus @default(INVITED)
+  updatedAt DateTime                 @updatedAt
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, userId])
+  @@map("session_participants")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum GamingFrequency {
+  CASUAL
+  REGULAR
+  HEAVY
+}
+
+enum GameOwnership {
+  OWN
+  WISHLIST
+  WILLING
+}
+
+enum MatchStatus {
+  MATCHED
+}
+
+enum SessionParticipantStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+}
