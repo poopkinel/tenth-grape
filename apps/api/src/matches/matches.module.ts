@@ -1,5 +1,10 @@
 import { Module } from '@nestjs/common';
+import { MatchesController } from './matches.controller';
+import { MatchesService } from './matches.service';
 
-// Phase 3: Like/pass, mutual match detection
-@Module({})
+@Module({
+  controllers: [MatchesController],
+  providers: [MatchesService],
+  exports: [MatchesService],
+})
 export class MatchesModule {}

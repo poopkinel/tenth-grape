@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
+import { DiscoveryController } from './discovery.controller';
+import { DiscoveryService } from './discovery.service';
 
-// Phase 3: PostGIS nearby query + game overlap scoring
-@Module({})
+@Module({
+  controllers: [DiscoveryController],
+  providers: [DiscoveryService],
+})
 export class DiscoveryModule {}
