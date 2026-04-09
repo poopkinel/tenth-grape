@@ -3,8 +3,8 @@ import { UserDto } from './user.dto';
 
 export interface MatchDto {
   id: string;
-  status: MatchStatus;
-  otherUser: UserDto & { gameOverlapCount: number };
+  otherUser: { id: string; name: string; avatar: string | null };
+  lastMessage: { content: string; createdAt: string; senderId: string } | null;
   createdAt: string;
 }
 

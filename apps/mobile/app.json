@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Meeple",
-    "slug": "meeple",
+    "slug": "tenth-grape",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -20,7 +20,11 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.ophek.tenthgrape"
+      "package": "com.ophek.tenthgrape",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "output": "static",
