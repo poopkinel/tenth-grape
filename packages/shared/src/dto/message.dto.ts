@@ -1,6 +1,6 @@
 export interface MessageDto {
   id: string;
-  matchId: string;
+  conversationId: string;
   senderId: string;
   content: string;
   createdAt: string;
@@ -8,6 +8,6 @@ export interface MessageDto {
 }
 
 export interface SendMessageDto {
-  matchId: string;
+  conversationId: string;
   content: string;
 }

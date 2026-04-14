@@ -1,17 +1,11 @@
-import { SessionParticipantStatus } from '../enums';
+import { SessionStatus, SessionParticipantStatus } from '../enums';
 
-export interface SessionDto {
-  id: string;
-  hostId: string;
-  bggId: number | null;
+export interface SessionGameDto {
+  bggId: number;
   title: string;
-  scheduledAt: string;
-  locationText: string;
-  lat: number;
-  lng: number;
-  maxPlayers: number;
-  description: string | null;
-  participants: SessionParticipantDto[];
+  thumbnail: string | null;
+  order: number;
+  winnerId: string | null;
 }
 
 export interface SessionParticipantDto {
@@ -19,10 +13,30 @@ export interface SessionParticipantDto {
   name: string;
   avatar: string | null;
   status: SessionParticipantStatus;
+  position: number | null;
+  score: number | null;
+  won: boolean;
+}
+
+export interface SessionDto {
+  id: string;
+  hostId: string;
+  title: string;
+  scheduledAt: string;
+  locationText: string;
+  lat: number;
+  lng: number;
+  maxPlayers: number;
+  description: string | null;
+  status: SessionStatus;
+  photos: string[];
+  notes: string | null;
+  completedAt: string | null;
+  games: SessionGameDto[];
+  participants: SessionParticipantDto[];
 }
 
 export interface CreateSessionDto {
-  bggId?: number;
   title: string;
   scheduledAt: string;
   locationText: string;
@@ -30,5 +44,20 @@ export interface CreateSessionDto {
   lng: number;
   maxPlayers: number;
   description?: string;
-  inviteMatchIds?: string[];
+  bggIds?: number[];
+  inviteUserIds?: string[];
+}
+
+export interface CompleteSessionDto {
+  photos?: string[];
+  notes?: string;
+  /** Per-game winner mapping: bggId → userId */
+  winners?: Record<number, string>;
+  /** Per-participant results */
+  participantResults?: Array<{
+    userId: string;
+    position?: number;
+    score?: number;
+    won?: boolean;
+  }>;
 }
