@@ -9,22 +9,36 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { authedApi } from '@/lib/api';
 import { GamingFrequency } from '@meeple/shared';
-
-const FREQUENCY_OPTIONS = [
-  { value: GamingFrequency.CASUAL, label: 'Casual', description: 'A few times a year' },
-  { value: GamingFrequency.REGULAR, label: 'Regular', description: 'A few times a month' },
-  { value: GamingFrequency.HEAVY, label: 'Heavy', description: 'Weekly or more' },
-];
 
 const TRAVEL_OPTIONS = [5, 10, 25, 50, 100];
 
 export default function PreferencesStep() {
+  const { t } = useTranslation();
   const [frequency, setFrequency] = useState<GamingFrequency>(GamingFrequency.REGULAR);
   const [maxTravelKm, setMaxTravelKm] = useState(25);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const FREQUENCY_OPTIONS = [
+    {
+      value: GamingFrequency.CASUAL,
+      label: t('auth.onboarding.preferences.frequencyCasual'),
+      description: t('auth.onboarding.preferences.frequencyCasualDesc'),
+    },
+    {
+      value: GamingFrequency.REGULAR,
+      label: t('auth.onboarding.preferences.frequencyRegular'),
+      description: t('auth.onboarding.preferences.frequencyRegularDesc'),
+    },
+    {
+      value: GamingFrequency.HEAVY,
+      label: t('auth.onboarding.preferences.frequencyHeavy'),
+      description: t('auth.onboarding.preferences.frequencyHeavyDesc'),
+    },
+  ];
 
   async function handleNext() {
     setLoading(true);
@@ -32,7 +46,7 @@ export default function PreferencesStep() {
       await authedApi.patch('/users/me', { gamingFrequency: frequency, maxTravelKm });
       router.push('/(auth)/onboarding/games');
     } catch {
-      Alert.alert('Error', 'Could not save preferences. Please try again.');
+      Alert.alert(t('common.error'), t('auth.onboarding.preferences.savePrefsFailed'));
     } finally {
       setLoading(false);
     }
@@ -40,9 +54,9 @@ export default function PreferencesStep() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Your gaming style</Text>
+      <Text style={styles.title}>{t('auth.onboarding.preferences.title')}</Text>
 
-      <Text style={styles.sectionLabel}>How often do you play?</Text>
+      <Text style={styles.sectionLabel}>{t('auth.onboarding.preferences.frequencyQuestion')}</Text>
       <View style={styles.optionGroup}>
         {FREQUENCY_OPTIONS.map((opt) => (
           <TouchableOpacity
@@ -60,7 +74,7 @@ export default function PreferencesStep() {
         ))}
       </View>
 
-      <Text style={styles.sectionLabel}>How far will you travel?</Text>
+      <Text style={styles.sectionLabel}>{t('auth.onboarding.preferences.travelQuestion')}</Text>
       <View style={styles.travelRow}>
         {TRAVEL_OPTIONS.map((km) => (
           <TouchableOpacity
@@ -80,7 +94,7 @@ export default function PreferencesStep() {
         onPress={handleNext}
         disabled={loading}
       >
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Next</Text>}
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t('common.next')}</Text>}
       </TouchableOpacity>
     </ScrollView>
   );

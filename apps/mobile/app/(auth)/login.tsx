@@ -8,8 +8,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
+import { showAlert } from '@/lib/alert';
 import { Link, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { api, ApiError } from '@/lib/api';
@@ -34,7 +34,7 @@ export default function LoginScreen() {
       router.replace('/(tabs)/feed');
     } catch (err) {
       const message = err instanceof ApiError ? err.message : t('auth.login.failed');
-      Alert.alert(t('common.error'), message);
+      showAlert(t('common.error'), message);
     } finally {
       setLoading(false);
     }

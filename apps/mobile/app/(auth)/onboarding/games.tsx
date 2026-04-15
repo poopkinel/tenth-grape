@@ -12,11 +12,13 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { authedApi } from '@/lib/api';
 import { GameOwnership } from '@meeple/shared';
 import type { GameSearchResultDto } from '@meeple/shared';
 
 export default function GamesStep() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
   const [addedIds, setAddedIds] = useState<Set<number>>(new Set());
@@ -38,7 +40,7 @@ export default function GamesStep() {
       });
       setAddedIds((prev) => new Set(prev).add(game.bggId));
     } catch {
-      Alert.alert('Error', 'Could not add game.');
+      Alert.alert(t('common.error'), t('auth.onboarding.games.addFailed'));
     } finally {
       setAdding(null);
     }
@@ -50,13 +52,13 @@ export default function GamesStep() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add your games</Text>
-      <Text style={styles.subtitle}>Search BoardGameGeek to add games you own or want to play</Text>
+      <Text style={styles.title}>{t('auth.onboarding.games.title')}</Text>
+      <Text style={styles.subtitle}>{t('auth.onboarding.games.subtitle')}</Text>
 
       <View style={styles.searchRow}>
         <TextInput
           style={styles.input}
-          placeholder="Search for a game..."
+          placeholder={t('auth.onboarding.games.searchPlaceholder')}
           placeholderTextColor="#999"
           value={query}
           onChangeText={setQuery}
@@ -64,7 +66,7 @@ export default function GamesStep() {
           returnKeyType="search"
         />
         <TouchableOpacity style={styles.searchBtn} onPress={() => setSearch(query)}>
-          <Text style={styles.searchBtnText}>Search</Text>
+          <Text style={styles.searchBtnText}>{t('auth.onboarding.games.go')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -108,7 +110,9 @@ export default function GamesStep() {
 
       <TouchableOpacity style={styles.doneBtn} onPress={handleDone}>
         <Text style={styles.doneBtnText}>
-          {addedIds.size > 0 ? `Done (${addedIds.size} added)` : 'Skip for now'}
+          {addedIds.size > 0
+            ? t('auth.onboarding.games.doneCount', { count: addedIds.size })
+            : t('common.skip')}
         </Text>
       </TouchableOpacity>
     </View>

@@ -1,13 +1,15 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Slot, usePathname } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 const STEPS = [
-  { path: 'location', label: 'Location' },
-  { path: 'preferences', label: 'Preferences' },
-  { path: 'games', label: 'Games' },
+  { path: 'location', labelKey: 'auth.onboarding.steps.location' },
+  { path: 'preferences', labelKey: 'auth.onboarding.steps.preferences' },
+  { path: 'games', labelKey: 'auth.onboarding.steps.games' },
 ];
 
 export default function OnboardingLayout() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const currentStep = STEPS.findIndex((s) => pathname.includes(s.path));
 
@@ -23,7 +25,7 @@ export default function OnboardingLayout() {
               </Text>
             </View>
             <Text style={[styles.stepLabel, i === currentStep && styles.stepLabelActive]}>
-              {step.label}
+              {t(step.labelKey)}
             </Text>
           </View>
         ))}

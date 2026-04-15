@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
@@ -16,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { showAlert } from '@/lib/alert';
 import type { AuthTokensDto } from '@meeple/shared';
 
 export default function RegisterScreen() {
@@ -29,11 +29,11 @@ export default function RegisterScreen() {
 
   async function handleRegister() {
     if (!name || !email || !password) {
-      Alert.alert(t('common.error'), t('auth.register.validation.fillAllFields'));
+      showAlert(t('common.error'), t('auth.register.validation.fillAllFields'));
       return;
     }
     if (password.length < 8) {
-      Alert.alert(t('common.error'), t('auth.register.validation.passwordTooShort'));
+      showAlert(t('common.error'), t('auth.register.validation.passwordTooShort'));
       return;
     }
     setLoading(true);
@@ -43,7 +43,7 @@ export default function RegisterScreen() {
       router.replace('/(auth)/onboarding/location');
     } catch (err) {
       const message = err instanceof ApiError ? err.message : t('auth.register.failed');
-      Alert.alert(t('common.error'), message);
+      showAlert(t('common.error'), message);
     } finally {
       setLoading(false);
     }

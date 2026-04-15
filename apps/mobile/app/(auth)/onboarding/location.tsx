@@ -8,10 +8,12 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import * as Location from 'expo-location';
 import { authedApi } from '@/lib/api';
 
 export default function LocationStep() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -21,8 +23,8 @@ export default function LocationStep() {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
-          'Permission needed',
-          'Location access lets us find board game partners near you.',
+          t('auth.onboarding.location.permissionNeeded'),
+          t('auth.onboarding.location.permissionMessage'),
         );
         setLoading(false);
         return;
@@ -36,7 +38,7 @@ export default function LocationStep() {
 
       router.push('/(auth)/onboarding/preferences');
     } catch {
-      Alert.alert('Error', 'Could not get your location. Please try again.');
+      Alert.alert(t('common.error'), t('auth.onboarding.location.couldNotGet'));
     } finally {
       setLoading(false);
     }
@@ -49,11 +51,8 @@ export default function LocationStep() {
   return (
     <View style={styles.container}>
       <Text style={styles.emoji}>📍</Text>
-      <Text style={styles.title}>Where are you?</Text>
-      <Text style={styles.subtitle}>
-        We use your location to find board game partners near you. We never share your exact
-        address.
-      </Text>
+      <Text style={styles.title}>{t('auth.onboarding.location.title')}</Text>
+      <Text style={styles.subtitle}>{t('auth.onboarding.location.subtitle')}</Text>
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -63,12 +62,12 @@ export default function LocationStep() {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Use my location</Text>
+          <Text style={styles.buttonText}>{t('auth.onboarding.location.useLocation')}</Text>
         )}
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={styles.skipText}>Skip for now</Text>
+        <Text style={styles.skipText}>{t('common.skip')}</Text>
       </TouchableOpacity>
     </View>
   );
