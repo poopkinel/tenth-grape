@@ -11,11 +11,14 @@ import {
   Alert,
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
-import type { AuthTokensDto } from '@meeple/shared';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { APP_NAME, type AuthTokensDto } from '@meeple/shared';
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,10 +31,10 @@ export default function LoginScreen() {
     try {
       const tokens = await api.post<AuthTokensDto>('/auth/login', { email, password });
       await setTokens(tokens);
-      router.replace('/(tabs)/discover');
+      router.replace('/(tabs)/feed');
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Login failed';
-      Alert.alert('Error', message);
+      const message = err instanceof ApiError ? err.message : t('auth.login.failed');
+      Alert.alert(t('common.error'), message);
     } finally {
       setLoading(false);
     }
@@ -42,13 +45,14 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <LanguageSwitcher />
       <View style={styles.inner}>
-        <Text style={styles.title}>Meeple</Text>
-        <Text style={styles.subtitle}>Find your next board game partner</Text>
+        <Text style={styles.title}>{APP_NAME}</Text>
+        <Text style={styles.subtitle}>{t('auth.login.title')}</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t('auth.login.emailPlaceholder')}
           placeholderTextColor="#999"
           value={email}
           onChangeText={setEmail}
@@ -58,7 +62,7 @@ export default function LoginScreen() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder={t('auth.login.passwordPlaceholder')}
           placeholderTextColor="#999"
           value={password}
           onChangeText={setPassword}
@@ -74,14 +78,14 @@ export default function LoginScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Log in</Text>
+            <Text style={styles.buttonText}>{t('auth.login.submit')}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
+          <Text style={styles.footerText}>{t('auth.login.noAccount')}</Text>
           <Link href="/(auth)/register">
-            <Text style={styles.link}>Sign up</Text>
+            <Text style={styles.link}>{t('auth.login.signUp')}</Text>
           </Link>
         </View>
       </View>

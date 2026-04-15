@@ -11,20 +11,23 @@ import {
   Alert,
   Image,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/store/auth.store';
 import { useMe, useUpdateProfile, useMyGames, useAddGame, useRemoveGame, useSearchGames } from '@/hooks/use-user';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { GamingFrequency, GameOwnership } from '@meeple/shared';
-
-const FREQ_OPTIONS = [
-  { value: GamingFrequency.CASUAL, label: 'Casual' },
-  { value: GamingFrequency.REGULAR, label: 'Regular' },
-  { value: GamingFrequency.HEAVY, label: 'Heavy' },
-];
 
 const TRAVEL_OPTIONS = [5, 10, 25, 50, 100];
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const { logout } = useAuthStore();
+
+  const FREQ_OPTIONS = [
+    { value: GamingFrequency.CASUAL, label: t('auth.onboarding.preferences.frequencyCasual') },
+    { value: GamingFrequency.REGULAR, label: t('auth.onboarding.preferences.frequencyRegular') },
+    { value: GamingFrequency.HEAVY, label: t('auth.onboarding.preferences.frequencyHeavy') },
+  ];
   const { data: me, isLoading: meLoading } = useMe();
   const { data: games, isLoading: gamesLoading } = useMyGames();
   const updateProfile = useUpdateProfile();
@@ -55,7 +58,7 @@ export default function ProfileScreen() {
 
   async function handleSave() {
     await updateProfile.mutateAsync({ name, bio, gamingFrequency: frequency, maxTravelKm });
-    Alert.alert('Saved', 'Profile updated');
+    Alert.alert(t('profile.saved'), t('profile.profileUpdated'));
   }
 
   async function handleAddGame(bggId: number) {
@@ -81,21 +84,25 @@ export default function ProfileScreen() {
         <Text style={styles.email}>{me?.email}</Text>
       </View>
 
+      {/* Language */}
+      <Text style={styles.label}>{t('profile.language')}</Text>
+      <LanguageSwitcher variant="inline" />
+
       {/* Editable fields */}
-      <Text style={styles.label}>Name</Text>
+      <Text style={styles.label}>{t('profile.name')}</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} />
 
-      <Text style={styles.label}>Bio</Text>
+      <Text style={styles.label}>{t('profile.bio')}</Text>
       <TextInput
         style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
         value={bio}
         onChangeText={setBio}
         multiline
-        placeholder="Tell others about yourself..."
+        placeholder={t('profile.bioPlaceholder')}
         placeholderTextColor="#999"
       />
 
-      <Text style={styles.label}>Gaming frequency</Text>
+      <Text style={styles.label}>{t('profile.gamingFrequency')}</Text>
       <View style={styles.chipRow}>
         {FREQ_OPTIONS.map((opt) => (
           <TouchableOpacity
@@ -110,7 +117,7 @@ export default function ProfileScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Max travel distance</Text>
+      <Text style={styles.label}>{t('profile.maxTravel')}</Text>
       <View style={styles.chipRow}>
         {TRAVEL_OPTIONS.map((km) => (
           <TouchableOpacity
@@ -133,15 +140,15 @@ export default function ProfileScreen() {
         {updateProfile.isPending ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.saveBtnText}>Save profile</Text>
+          <Text style={styles.saveBtnText}>{t('profile.saveProfile')}</Text>
         )}
       </TouchableOpacity>
 
       {/* Game Library */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>My Games ({games?.length ?? 0})</Text>
+        <Text style={styles.sectionTitle}>{t('profile.myGames', { count: games?.length ?? 0 })}</Text>
         <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
-          <Text style={styles.addLink}>{showSearch ? 'Cancel' : '+ Add'}</Text>
+          <Text style={styles.addLink}>{showSearch ? t('profile.cancelAdd') : t('profile.addGame')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -152,13 +159,13 @@ export default function ProfileScreen() {
               style={[styles.input, { flex: 1, marginBottom: 0 }]}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              placeholder="Search BoardGameGeek..."
+              placeholder={t('profile.searchBggPlaceholder')}
               placeholderTextColor="#999"
               onSubmitEditing={() => setActiveSearch(searchQuery)}
               returnKeyType="search"
             />
             <TouchableOpacity style={styles.searchBtn} onPress={() => setActiveSearch(searchQuery)}>
-              <Text style={styles.searchBtnText}>Go</Text>
+              <Text style={styles.searchBtnText}>{t('auth.onboarding.games.go')}</Text>
             </TouchableOpacity>
           </View>
           {searching && <ActivityIndicator style={{ marginTop: 8 }} />}
@@ -193,7 +200,7 @@ export default function ProfileScreen() {
 
       {/* Logout */}
       <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-        <Text style={styles.logoutText}>Log out</Text>
+        <Text style={styles.logoutText}>{t('profile.logOut')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

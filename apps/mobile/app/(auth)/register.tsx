@@ -12,11 +12,14 @@ import {
   ScrollView,
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import type { AuthTokensDto } from '@meeple/shared';
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,22 +29,21 @@ export default function RegisterScreen() {
 
   async function handleRegister() {
     if (!name || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert(t('common.error'), t('auth.register.validation.fillAllFields'));
       return;
     }
     if (password.length < 8) {
-      Alert.alert('Error', 'Password must be at least 8 characters');
+      Alert.alert(t('common.error'), t('auth.register.validation.passwordTooShort'));
       return;
     }
     setLoading(true);
     try {
       const tokens = await api.post<AuthTokensDto>('/auth/register', { name, email, password });
       await setTokens(tokens);
-      // New users go through onboarding
       router.replace('/(auth)/onboarding/location');
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Registration failed';
-      Alert.alert('Error', message);
+      const message = err instanceof ApiError ? err.message : t('auth.register.failed');
+      Alert.alert(t('common.error'), message);
     } finally {
       setLoading(false);
     }
@@ -52,13 +54,14 @@ export default function RegisterScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <LanguageSwitcher />
       <ScrollView contentContainerStyle={styles.inner} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Create account</Text>
-        <Text style={styles.subtitle}>Join the board game community</Text>
+        <Text style={styles.title}>{t('auth.register.title')}</Text>
+        <Text style={styles.subtitle}>{t('auth.register.subtitle')}</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Your name"
+          placeholder={t('auth.register.namePlaceholder')}
           placeholderTextColor="#999"
           value={name}
           onChangeText={setName}
@@ -66,7 +69,7 @@ export default function RegisterScreen() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t('auth.register.emailPlaceholder')}
           placeholderTextColor="#999"
           value={email}
           onChangeText={setEmail}
@@ -76,7 +79,7 @@ export default function RegisterScreen() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Password (min. 8 characters)"
+          placeholder={t('auth.register.passwordPlaceholder')}
           placeholderTextColor="#999"
           value={password}
           onChangeText={setPassword}
@@ -92,14 +95,14 @@ export default function RegisterScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Create account</Text>
+            <Text style={styles.buttonText}>{t('auth.register.submit')}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Already have an account? </Text>
+          <Text style={styles.footerText}>{t('auth.register.haveAccount')}</Text>
           <Link href="/(auth)/login">
-            <Text style={styles.link}>Log in</Text>
+            <Text style={styles.link}>{t('auth.register.logIn')}</Text>
           </Link>
         </View>
       </ScrollView>

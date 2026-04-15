@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { APP_NAME } from '@meeple/shared';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -14,6 +15,6 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
-  console.log(`Meeple API running on http://localhost:${port}/api`);
+  console.log(`${APP_NAME} API running on http://localhost:${port}/api`);
 }
 bootstrap();

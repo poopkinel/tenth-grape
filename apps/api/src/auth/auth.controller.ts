@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { DEEP_LINK_SCHEME } from '@meeple/shared';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -44,7 +45,7 @@ export class AuthController {
   async googleCallback(@Req() req: Request, @Res() res: Response) {
     const tokens = await this.authService.googleLogin(req.user as any);
     // Redirect to mobile deep link / web app with tokens
-    const redirect = `meeple://auth?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
+    const redirect = `${DEEP_LINK_SCHEME}://auth?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
     res.redirect(redirect);
   }
 }

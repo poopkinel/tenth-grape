@@ -1,4 +1,5 @@
 // Shared DTOs and types between mobile and API
+export * from './brand';
 export * from './enums';
 export * from './dto/auth.dto';
 export * from './dto/user.dto';

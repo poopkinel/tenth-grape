@@ -45,7 +45,7 @@ export default function GamesStep() {
   }
 
   function handleDone() {
-    router.replace('/(tabs)/discover');
+    router.replace('/(tabs)/feed');
   }
 
   return (

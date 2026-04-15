@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
 import type { AuthTokensDto, UserDto } from '@meeple/shared';
+import { secureStorage } from '@/lib/secure-storage';
 
 interface AuthState {
   user: UserDto | null;
@@ -21,22 +21,22 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
 
   setTokens: async ({ accessToken, refreshToken }) => {
-    await SecureStore.setItemAsync('accessToken', accessToken);
-    await SecureStore.setItemAsync('refreshToken', refreshToken);
+    await secureStorage.set('accessToken', accessToken);
+    await secureStorage.set('refreshToken', refreshToken);
     set({ accessToken, refreshToken });
   },
 
   setUser: (user) => set({ user }),
 
   logout: async () => {
-    await SecureStore.deleteItemAsync('accessToken');
-    await SecureStore.deleteItemAsync('refreshToken');
+    await secureStorage.remove('accessToken');
+    await secureStorage.remove('refreshToken');
     set({ user: null, accessToken: null, refreshToken: null });
   },
 
   hydrate: async () => {
-    const accessToken = await SecureStore.getItemAsync('accessToken');
-    const refreshToken = await SecureStore.getItemAsync('refreshToken');
+    const accessToken = await secureStorage.get('accessToken');
+    const refreshToken = await secureStorage.get('refreshToken');
     set({ accessToken, refreshToken, isLoading: false });
   },
 }));

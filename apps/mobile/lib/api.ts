@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { secureStorage } from './secure-storage';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api';
 
@@ -46,7 +46,7 @@ export class ApiError extends Error {
 
 /** Authenticated fetch — reads token from SecureStore automatically */
 export async function authRequest<T>(path: string, options: Omit<RequestOptions, 'token'> = {}): Promise<T> {
-  const token = await SecureStore.getItemAsync('accessToken');
+  const token = await secureStorage.get('accessToken');
   return request<T>(path, { ...options, token });
 }
 
