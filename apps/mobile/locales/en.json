@@ -1,0 +1,124 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "done": "Done",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip for now",
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Try again",
+    "search": "Search",
+    "add": "Add",
+    "remove": "Remove",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "login": {
+      "title": "Share your board game life",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password",
+      "submit": "Log in",
+      "noAccount": "Don't have an account? ",
+      "signUp": "Sign up",
+      "failed": "Login failed"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Join the board game community",
+      "namePlaceholder": "Your name",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password (min. 8 characters)",
+      "submit": "Create account",
+      "haveAccount": "Already have an account? ",
+      "logIn": "Log in",
+      "validation": {
+        "fillAllFields": "Please fill in all fields",
+        "passwordTooShort": "Password must be at least 8 characters"
+      },
+      "failed": "Registration failed"
+    },
+    "onboarding": {
+      "steps": {
+        "location": "Location",
+        "preferences": "Preferences",
+        "games": "Games"
+      },
+      "location": {
+        "title": "Where are you?",
+        "subtitle": "We use your location to find board game partners near you. We never share your exact address.",
+        "useLocation": "Use my location",
+        "permissionNeeded": "Permission needed",
+        "permissionMessage": "Location access lets us find board game partners near you.",
+        "couldNotGet": "Could not get your location. Please try again."
+      },
+      "preferences": {
+        "title": "Your gaming style",
+        "frequencyQuestion": "How often do you play?",
+        "travelQuestion": "How far will you travel?",
+        "frequencyCasual": "Casual",
+        "frequencyCasualDesc": "A few times a year",
+        "frequencyRegular": "Regular",
+        "frequencyRegularDesc": "A few times a month",
+        "frequencyHeavy": "Heavy",
+        "frequencyHeavyDesc": "Weekly or more",
+        "savePrefsFailed": "Could not save preferences. Please try again."
+      },
+      "games": {
+        "title": "Add your games",
+        "subtitle": "Search BoardGameGeek to add games you own or want to play",
+        "searchPlaceholder": "Search for a game...",
+        "go": "Search",
+        "skipForNow": "Skip for now",
+        "doneCount": "Done ({{count}} added)",
+        "addFailed": "Could not add game."
+      }
+    }
+  },
+  "tabs": {
+    "feed": "Feed",
+    "events": "Events",
+    "play": "Play",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "feed": {
+    "title": "Feed",
+    "emptyTitle": "Nothing yet in your feed.",
+    "emptyHint": "Log a play, find friends, or join a group.",
+    "postType": {
+      "PLAY_LOG": "Played",
+      "GAME_REVIEW": "Review",
+      "EVENT_HIGHLIGHT": "Event",
+      "PHOTO": "Photo",
+      "TEXT": "Post"
+    },
+    "timeAgo": {
+      "now": "just now",
+      "minutes": "{{count}}m ago",
+      "hours": "{{count}}h ago",
+      "days": "{{count}}d ago"
+    }
+  },
+  "profile": {
+    "name": "Name",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell others about yourself...",
+    "gamingFrequency": "Gaming frequency",
+    "maxTravel": "Max travel distance",
+    "saveProfile": "Save profile",
+    "myGames": "My Games ({{count}})",
+    "cancelAdd": "Cancel",
+    "addGame": "+ Add",
+    "searchBggPlaceholder": "Search BoardGameGeek...",
+    "language": "Language",
+    "logOut": "Log out",
+    "saved": "Saved",
+    "profileUpdated": "Profile updated"
+  }
+}

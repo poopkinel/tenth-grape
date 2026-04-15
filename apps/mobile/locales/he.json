@@ -1,0 +1,124 @@
+{
+  "common": {
+    "save": "שמור",
+    "cancel": "ביטול",
+    "confirm": "אישור",
+    "delete": "מחק",
+    "edit": "ערוך",
+    "done": "סיום",
+    "back": "חזרה",
+    "next": "הבא",
+    "skip": "דלג בינתיים",
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "retry": "נסה שוב",
+    "search": "חיפוש",
+    "add": "הוסף",
+    "remove": "הסר",
+    "yes": "כן",
+    "no": "לא"
+  },
+  "auth": {
+    "login": {
+      "title": "שתפו את חיי המשחקים שלכם",
+      "emailPlaceholder": "אימייל",
+      "passwordPlaceholder": "סיסמה",
+      "submit": "כניסה",
+      "noAccount": "אין לך חשבון? ",
+      "signUp": "הרשמה",
+      "failed": "הכניסה נכשלה"
+    },
+    "register": {
+      "title": "יצירת חשבון",
+      "subtitle": "הצטרפו לקהילת משחקי הקופסה",
+      "namePlaceholder": "השם שלכם",
+      "emailPlaceholder": "אימייל",
+      "passwordPlaceholder": "סיסמה (לפחות 8 תווים)",
+      "submit": "צור חשבון",
+      "haveAccount": "יש לכם כבר חשבון? ",
+      "logIn": "כניסה",
+      "validation": {
+        "fillAllFields": "נא למלא את כל השדות",
+        "passwordTooShort": "הסיסמה חייבת להכיל לפחות 8 תווים"
+      },
+      "failed": "ההרשמה נכשלה"
+    },
+    "onboarding": {
+      "steps": {
+        "location": "מיקום",
+        "preferences": "העדפות",
+        "games": "משחקים"
+      },
+      "location": {
+        "title": "איפה אתם?",
+        "subtitle": "אנחנו משתמשים במיקום שלכם כדי למצוא שותפים למשחקים בקרבתכם. הכתובת המדויקת לעולם לא משותפת.",
+        "useLocation": "השתמש במיקום שלי",
+        "permissionNeeded": "נדרשות הרשאות",
+        "permissionMessage": "גישה למיקום מאפשרת לנו למצוא שותפים למשחקים בקרבתכם.",
+        "couldNotGet": "לא הצלחנו לקבל את המיקום. נסו שוב."
+      },
+      "preferences": {
+        "title": "הסגנון שלכם",
+        "frequencyQuestion": "כמה פעמים אתם משחקים?",
+        "travelQuestion": "עד כמה רחוק אתם מוכנים להגיע?",
+        "frequencyCasual": "מזדמן",
+        "frequencyCasualDesc": "כמה פעמים בשנה",
+        "frequencyRegular": "קבוע",
+        "frequencyRegularDesc": "כמה פעמים בחודש",
+        "frequencyHeavy": "כבד",
+        "frequencyHeavyDesc": "שבועית או יותר",
+        "savePrefsFailed": "לא הצלחנו לשמור את ההעדפות. נסו שוב."
+      },
+      "games": {
+        "title": "הוסיפו את המשחקים שלכם",
+        "subtitle": "חפשו ב־BoardGameGeek כדי להוסיף משחקים שיש לכם או שתרצו לשחק",
+        "searchPlaceholder": "חפשו משחק...",
+        "go": "חפש",
+        "skipForNow": "דלג בינתיים",
+        "doneCount": "סיום ({{count}} נוספו)",
+        "addFailed": "לא הצלחנו להוסיף את המשחק."
+      }
+    }
+  },
+  "tabs": {
+    "feed": "פיד",
+    "events": "אירועים",
+    "play": "שחק",
+    "messages": "הודעות",
+    "profile": "פרופיל"
+  },
+  "feed": {
+    "title": "פיד",
+    "emptyTitle": "הפיד שלכם ריק עדיין.",
+    "emptyHint": "תעדו משחק, מצאו חברים, או הצטרפו לקבוצה.",
+    "postType": {
+      "PLAY_LOG": "שיחק",
+      "GAME_REVIEW": "ביקורת",
+      "EVENT_HIGHLIGHT": "אירוע",
+      "PHOTO": "תמונה",
+      "TEXT": "פוסט"
+    },
+    "timeAgo": {
+      "now": "הרגע",
+      "minutes": "לפני {{count}} ד׳",
+      "hours": "לפני {{count}} ש׳",
+      "days": "לפני {{count}} י׳"
+    }
+  },
+  "profile": {
+    "name": "שם",
+    "bio": "תיאור",
+    "bioPlaceholder": "ספרו קצת על עצמכם...",
+    "gamingFrequency": "תדירות משחק",
+    "maxTravel": "טווח נסיעה מקסימלי",
+    "saveProfile": "שמירת פרופיל",
+    "myGames": "המשחקים שלי ({{count}})",
+    "cancelAdd": "ביטול",
+    "addGame": "+ הוספה",
+    "searchBggPlaceholder": "חפשו ב־BoardGameGeek...",
+    "language": "שפה",
+    "logOut": "יציאה",
+    "saved": "נשמר",
+    "profileUpdated": "הפרופיל עודכן"
+  }
+}
