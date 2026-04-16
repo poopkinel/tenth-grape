@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/store/auth.store';
 import { useMe, useUpdateProfile, useMyGames, useAddGame, useRemoveGame, useSearchGames } from '@/hooks/use-user';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { PoweredByBgg } from '@/components/powered-by-bgg';
 import { GamingFrequency, GameOwnership } from '@meeple/shared';
 
 const TRAVEL_OPTIONS = [5, 10, 25, 50, 100];
@@ -202,6 +203,8 @@ export default function ProfileScreen() {
       <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
         <Text style={styles.logoutText}>{t('profile.logOut')}</Text>
       </TouchableOpacity>
+
+      <PoweredByBgg />
     </ScrollView>
   );
 }

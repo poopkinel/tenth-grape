@@ -11,6 +11,7 @@ import { readFileSync } from 'fs';
 import { resolve, isAbsolute } from 'path';
 import * as yaml from 'js-yaml';
 import { PrismaClient } from '@prisma/client';
+import { BggService } from '../src/games/bgg.service';
 
 interface YamlEvent {
   title: string;
@@ -35,6 +36,7 @@ interface YamlRoot {
 }
 
 const prisma = new PrismaClient();
+const bgg = new BggService();
 
 function parseDate(input: string): Date {
   // Accept "YYYY-MM-DD HH:mm" and full ISO
@@ -47,36 +49,73 @@ function parseDate(input: string): Date {
 }
 
 /**
- * Resolve a list of game titles to bggIds against the local catalog.
- * Case-insensitive exact match first; falls back to contains. Warns on misses.
+ * Resolve a list of game titles to bggIds.
+ *
+ * Resolution order:
+ *   1. Exact match (case-insensitive) against the local Game catalog.
+ *   2. Fuzzy `contains` match against the local catalog.
+ *   3. BGG API search (requires BGG_TOKEN env var). First hit is fetched,
+ *      its full detail cached into the local Game table, and its bggId used.
+ *   4. Give up — log a warning and skip the game.
  */
 async function resolveGameTitles(titles: string[]): Promise<number[]> {
   const bggIds: number[] = [];
   for (const title of titles) {
-    const exact = await prisma.game.findFirst({
-      where: { title: { equals: title, mode: 'insensitive' } },
-      select: { bggId: true, title: true },
-    });
-    if (exact) {
-      bggIds.push(exact.bggId);
-      continue;
-    }
-
-    const fuzzy = await prisma.game.findFirst({
-      where: { title: { contains: title, mode: 'insensitive' } },
-      select: { bggId: true, title: true },
-      orderBy: { title: 'asc' },
-    });
-    if (fuzzy) {
-      console.warn(
-        `  ! fuzzy match for "${title}" → "${fuzzy.title}" (bggId ${fuzzy.bggId})`,
-      );
-      bggIds.push(fuzzy.bggId);
-    } else {
-      console.warn(`  ! no match for game "${title}" — skipped`);
-    }
+    const resolved = await resolveOne(title);
+    if (resolved != null) bggIds.push(resolved);
   }
   return bggIds;
+}
+
+async function resolveOne(title: string): Promise<number | null> {
+  // 1. Exact match
+  const exact = await prisma.game.findFirst({
+    where: { title: { equals: title, mode: 'insensitive' } },
+    select: { bggId: true, title: true },
+  });
+  if (exact) return exact.bggId;
+
+  // 2. Fuzzy contains match
+  const fuzzy = await prisma.game.findFirst({
+    where: { title: { contains: title, mode: 'insensitive' } },
+    select: { bggId: true, title: true },
+    orderBy: { title: 'asc' },
+  });
+  if (fuzzy) {
+    console.warn(`  ! fuzzy match for "${title}" → "${fuzzy.title}" (bggId ${fuzzy.bggId})`);
+    return fuzzy.bggId;
+  }
+
+  // 3. BGG API fallback (only if token is configured)
+  if (!bgg.isAvailable()) {
+    console.warn(`  ! no local match for "${title}" and BGG_TOKEN not set — skipped`);
+    return null;
+  }
+
+  try {
+    const results = await bgg.search(title);
+    if (results.length === 0) {
+      console.warn(`  ! BGG returned no results for "${title}" — skipped`);
+      return null;
+    }
+    const top = results[0];
+    const detail = await bgg.getGameDetail(top.bggId);
+    if (!detail) {
+      console.warn(`  ! BGG detail fetch failed for bggId ${top.bggId} — skipped`);
+      return null;
+    }
+
+    await prisma.game.upsert({
+      where: { bggId: detail.bggId },
+      create: detail,
+      update: detail,
+    });
+    console.log(`  + fetched "${detail.title}" from BGG (bggId ${detail.bggId})`);
+    return detail.bggId;
+  } catch (e: any) {
+    console.warn(`  ! BGG fetch error for "${title}": ${e.message} — skipped`);
+    return null;
+  }
 }
 
 async function resolveOrCreateHost(

@@ -13,6 +13,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEvent, useRsvpEvent, useCancelEvent } from '@/hooks/use-events';
 import { EventAttendeeStatus } from '@meeple/shared';
 import { useAuthStore } from '@/store/auth.store';
+import { PoweredByBgg } from '@/components/powered-by-bgg';
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -152,6 +153,8 @@ export default function EventDetailScreen() {
           <Text style={styles.cancelBtnText}>Cancel event</Text>
         </TouchableOpacity>
       )}
+
+      {event.featuredGames && event.featuredGames.length > 0 && <PoweredByBgg />}
     </ScrollView>
   );
 }

@@ -20,8 +20,9 @@ defaultLocation:
   lng: 34.8111
 
 events:
+  # NOTE: date must be in the future or the event won't show up in "upcoming".
   - title: "ערב משחקים ראשון של אפריל"
-    date: "2026-04-01 19:30"
+    date: "2026-05-01 19:30"
     location: "מועדון המשחקים, נאות אפקה"
     description: |
       הי כולם מחר נפגשים במועדון לערב הראשון של אפריל 🙌
