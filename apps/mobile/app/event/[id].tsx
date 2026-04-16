@@ -6,6 +6,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Image,
+  Linking,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEvent, useRsvpEvent, useCancelEvent } from '@/hooks/use-events';
@@ -83,6 +85,35 @@ export default function EventDetailScreen() {
         </View>
       )}
 
+      {event.externalLink && (
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Link</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(event.externalLink!)}>
+            <Text style={styles.linkText} numberOfLines={1}>
+              {event.externalLink}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {event.featuredGames && event.featuredGames.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Featured games</Text>
+          <View style={styles.featuredGamesWrap}>
+            {event.featuredGames.map((g) => (
+              <View key={g.bggId} style={styles.featuredGame}>
+                {g.thumbnail ? (
+                  <Image source={{ uri: g.thumbnail }} style={styles.featuredGameThumb} />
+                ) : (
+                  <View style={[styles.featuredGameThumb, styles.featuredGameThumbPlaceholder]} />
+                )}
+                <Text style={styles.featuredGameTitle} numberOfLines={2}>{g.title}</Text>
+              </View>
+            ))}
+          </View>
+        </>
+      )}
+
       <Text style={styles.sectionTitle}>Attendees</Text>
       {event.attendees.map((a) => (
         <View key={a.userId} style={styles.attendeeRow}>
@@ -142,6 +173,12 @@ const styles = StyleSheet.create({
   descBlock: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   descText: { fontSize: 14, color: '#374151', marginTop: 6, lineHeight: 20 },
   sectionTitle: { fontSize: 17, fontWeight: '700', marginTop: 24, marginBottom: 12 },
+  linkText: { fontSize: 13, color: '#2563EB', fontWeight: '500', maxWidth: 240, textAlign: 'right' },
+  featuredGamesWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 8 },
+  featuredGame: { width: 92, alignItems: 'center', gap: 4 },
+  featuredGameThumb: { width: 80, height: 80, borderRadius: 8 },
+  featuredGameThumbPlaceholder: { backgroundColor: '#e5e7eb' },
+  featuredGameTitle: { fontSize: 12, textAlign: 'center', color: '#374151' },
   attendeeRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, gap: 10 },
   pAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#2563EB', justifyContent: 'center', alignItems: 'center' },
   pAvatarText: { color: '#fff', fontSize: 13, fontWeight: '700' },

@@ -272,19 +272,23 @@ model GroupMember {
 // ─── Events ───────────────────────────────────────────────────────────────────
 
 model Event {
-  id           String    @id @default(cuid())
-  title        String
-  description  String?
-  locationText String
-  lat          Float
-  lng          Float
-  startAt      DateTime
-  endAt        DateTime?
-  hostUserId   String?
-  capacity     Int?
-  coverImage   String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  locationText    String
+  lat             Float
+  lng             Float
+  startAt         DateTime
+  endAt           DateTime?
+  hostUserId      String?
+  capacity        Int?
+  coverImage      String?
+  externalLink    String?
+  /// Curated list of games being highlighted at this event. Not exhaustive —
+  /// most events feature a handful of games out of a much larger library.
+  featuredBggIds  Int[]     @default([])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   host      User?           @relation(fields: [hostUserId], references: [id], onDelete: SetNull)
   attendees EventAttendee[]

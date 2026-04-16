@@ -14,7 +14,7 @@ const EVENT_INCLUDE = {
   },
 };
 
-type EventWithIncludes = NonNullable<
+type EventRow = NonNullable<
   Awaited<ReturnType<PrismaService['event']['findUnique']>>
 > & {
   host: { id: string; name: string; avatar: string | null } | null;
@@ -25,16 +25,30 @@ type EventWithIncludes = NonNullable<
   }>;
 };
 
+export interface GameLookup {
+  bggId: number;
+  title: string;
+  thumbnail: string | null;
+}
+
 @Injectable()
 export class EventsService {
   constructor(private prisma: PrismaService) {}
 
   async create(hostUserId: string, dto: CreateEventDto) {
-    return this.prisma.event.create({
+    const event = await this.prisma.event.create({
       data: {
-        ...dto,
+        title: dto.title,
+        description: dto.description,
+        locationText: dto.locationText,
+        lat: dto.lat,
+        lng: dto.lng,
         startAt: new Date(dto.startAt),
         endAt: dto.endAt ? new Date(dto.endAt) : null,
+        capacity: dto.capacity,
+        coverImage: dto.coverImage,
+        externalLink: dto.externalLink,
+        featuredBggIds: dto.featuredBggIds ?? [],
         hostUserId,
         attendees: {
           create: { userId: hostUserId, status: EventAttendeeStatus.GOING },
@@ -42,6 +56,7 @@ export class EventsService {
       },
       include: EVENT_INCLUDE,
     });
+    return this.formatOne(event as EventRow, hostUserId);
   }
 
   async getById(eventId: string, viewerId: string) {
@@ -50,7 +65,7 @@ export class EventsService {
       include: EVENT_INCLUDE,
     });
     if (!event) throw new NotFoundException('Event not found');
-    return this.format(event as EventWithIncludes, viewerId, { detailed: true });
+    return this.formatOne(event as EventRow, viewerId, { detailed: true });
   }
 
   async findNearby(viewerId: string, lat: number, lng: number, radiusKm: number) {
@@ -82,7 +97,7 @@ export class EventsService {
       orderBy: { startAt: 'asc' },
     });
 
-    return events.map((e) => this.format(e as EventWithIncludes, viewerId));
+    return this.formatMany(events as EventRow[], viewerId);
   }
 
   async listMine(userId: string) {
@@ -97,7 +112,7 @@ export class EventsService {
       include: EVENT_INCLUDE,
       orderBy: { startAt: 'asc' },
     });
-    return events.map((e) => this.format(e as EventWithIncludes, userId));
+    return this.formatMany(events as EventRow[], userId);
   }
 
   async rsvp(eventId: string, userId: string, status: EventAttendeeStatus) {
@@ -132,15 +147,50 @@ export class EventsService {
     await this.prisma.event.delete({ where: { id: eventId } });
   }
 
-  private format(
-    event: EventWithIncludes,
+  // ─── Formatters ─────────────────────────────────────────────────────────────
+
+  /** Bulk format — fetches all featured games for a list of events in one query. */
+  private async formatMany(events: EventRow[], viewerId: string) {
+    const allBggIds = Array.from(
+      new Set(events.flatMap((e) => e.featuredBggIds ?? [])),
+    );
+    const gameMap = await this.loadGameMap(allBggIds);
+    return events.map((e) => this.shape(e, viewerId, gameMap, {}));
+  }
+
+  /** Single-event format — does its own game lookup. */
+  private async formatOne(
+    event: EventRow,
     viewerId: string,
     opts: { detailed?: boolean } = {},
+  ) {
+    const gameMap = await this.loadGameMap(event.featuredBggIds ?? []);
+    return this.shape(event, viewerId, gameMap, opts);
+  }
+
+  private async loadGameMap(bggIds: number[]): Promise<Map<number, GameLookup>> {
+    if (bggIds.length === 0) return new Map();
+    const games = await this.prisma.game.findMany({
+      where: { bggId: { in: bggIds } },
+      select: { bggId: true, title: true, thumbnail: true },
+    });
+    return new Map(games.map((g) => [g.bggId, g]));
+  }
+
+  private shape(
+    event: EventRow,
+    viewerId: string,
+    gameMap: Map<number, GameLookup>,
+    opts: { detailed?: boolean },
   ) {
     const myAttendance = event.attendees.find((a) => a.userId === viewerId);
     const goingCount = event.attendees.filter(
       (a) => a.status === EventAttendeeStatus.GOING,
     ).length;
+
+    const featuredGames = (event.featuredBggIds ?? [])
+      .map((bggId) => gameMap.get(bggId))
+      .filter((g): g is GameLookup => !!g);
 
     const base = {
       id: event.id,
@@ -153,8 +203,10 @@ export class EventsService {
       endAt: event.endAt?.toISOString() ?? null,
       capacity: event.capacity,
       coverImage: event.coverImage,
+      externalLink: event.externalLink,
       host: event.host,
       attendeeCount: goingCount,
+      featuredGames,
       myStatus: myAttendance?.status ?? null,
     };
 

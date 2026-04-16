@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Location from 'expo-location';
@@ -88,6 +89,23 @@ export default function EventsScreen() {
               <Text style={styles.cardTitle}>{item.title}</Text>
               <Text style={styles.cardTime}>{formatEventTime(item.startAt)}</Text>
               <Text style={styles.cardLocation}>📍 {item.locationText}</Text>
+
+              {item.featuredGames && item.featuredGames.length > 0 && (
+                <View style={styles.gamesRow}>
+                  {item.featuredGames.slice(0, 4).map((g) => (
+                    <View key={g.bggId} style={styles.gamePill}>
+                      {g.thumbnail ? (
+                        <Image source={{ uri: g.thumbnail }} style={styles.gameThumb} />
+                      ) : null}
+                      <Text style={styles.gamePillText} numberOfLines={1}>{g.title}</Text>
+                    </View>
+                  ))}
+                  {item.featuredGames.length > 4 && (
+                    <Text style={styles.moreGames}>+{item.featuredGames.length - 4}</Text>
+                  )}
+                </View>
+              )}
+
               <View style={styles.cardFooter}>
                 <Text style={styles.attendeeCount}>
                   {item.attendeeCount} going
@@ -151,6 +169,23 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
   cardTime: { fontSize: 13, color: '#2563EB', fontWeight: '600' },
   cardLocation: { fontSize: 13, color: '#6b7280', marginTop: 2 },
+  gamesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
+  gamePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingRight: 8,
+    paddingVertical: 3,
+    paddingLeft: 3,
+    gap: 5,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    maxWidth: 160,
+  },
+  gameThumb: { width: 22, height: 22, borderRadius: 4 },
+  gamePillText: { fontSize: 12, color: '#374151', flexShrink: 1 },
+  moreGames: { fontSize: 12, color: '#9ca3af', alignSelf: 'center' },
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   attendeeCount: { fontSize: 13, color: '#374151', fontWeight: '600' },
   myStatus: { borderRadius: 10, paddingHorizontal: 8, paddingVertical: 3 },

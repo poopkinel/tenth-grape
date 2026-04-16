@@ -1,9 +1,12 @@
 import {
+  ArrayMaxSize,
+  IsArray,
   IsDateString,
   IsInt,
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
   Max,
   MaxLength,
   Min,
@@ -48,4 +51,14 @@ export class CreateEventDto {
   @IsOptional()
   @IsString()
   coverImage?: string;
+
+  @IsOptional()
+  @IsUrl()
+  externalLink?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  @ArrayMaxSize(20)
+  featuredBggIds?: number[];
 }

@@ -168,6 +168,18 @@ function DiscoveryView({ emptyState }: { emptyState: FeedEmptyState }) {
               <Text style={styles.discoveryCardMeta}>
                 {date.toLocaleDateString()} · {ev.locationText}
               </Text>
+              {ev.featuredGames && ev.featuredGames.length > 0 && (
+                <View style={styles.invGamesRow}>
+                  {ev.featuredGames.slice(0, 3).map((g) => (
+                    <View key={g.bggId} style={styles.invGamePill}>
+                      {g.thumbnail ? (
+                        <Image source={{ uri: g.thumbnail }} style={styles.invGameThumb} />
+                      ) : null}
+                      <Text style={styles.invGameText} numberOfLines={1}>{g.title}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
               <Text style={styles.discoveryCardFooter}>
                 {ev.attendeeCount} going
               </Text>

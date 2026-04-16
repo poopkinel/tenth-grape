@@ -1,0 +1,49 @@
+# Sample events file for import.
+#
+# Fill in `events:` below. You can paste WhatsApp/Telegram/Facebook descriptions
+# as-is — including Hebrew, emoji, and links. The importer handles the rest.
+#
+# Required per event: title, date, location
+# Recommended: description, lat/lng (or use defaultLocation), featuredGames
+#
+# Run:  npx tsx scripts/import-events.ts scripts/events-sample.yaml
+
+# Host used when an event doesn't specify one. Created on first run if missing.
+defaultHost:
+  email: club-neot-afeka@meeple.dev
+  name: "מועדון המשחקים נאות אפקה"
+
+# Fallback lat/lng when an event doesn't specify its own coordinates.
+# (These are rough coords for Neot Afeka — replace with your actual club location.)
+defaultLocation:
+  lat: 32.1093
+  lng: 34.8111
+
+events:
+  - title: "ערב משחקים ראשון של אפריל"
+    date: "2026-04-01 19:30"
+    location: "מועדון המשחקים, נאות אפקה"
+    description: |
+      הי כולם מחר נפגשים במועדון לערב הראשון של אפריל 🙌
+      וכרגיל התחדשנו קצת בספריה שלנו עם משחקים חדשים!
+
+      Tyrants of the underdark — משחק בניית חפיסה ושליטה על מפה מעולה מהיר
+      Fractured sky — משחק בידינג שמשלב מידע נסתר, יוצר מתח נהדר בין השחקנים ובונוס הוא בגרסת דלוקס שלו אז הוא גם יפיפה על השולחן
+      פינגוויין פארטי — משחק זריז וקליל שבו בונים מגדל של פינגווינים לפי צבעים ומי שנשאר עם קלפים ביד מקבל נקודות שליליות
+
+      איזה כיף נפגשיח מחר אחרי הרבה זמן 🙌🙌🙌
+    externalLink: "https://easybridge.co.il/board-games/OnBoard.html"
+    featuredGames:
+      - "Tyrants of the Underdark"
+      - "Fractured Sky"
+      - "Penguin Party"
+    # coverImage: "https://i.imgur.com/abc123.jpg"  # optional — upload to Imgur and paste URL
+
+  # Add more events here, same shape.
+  # - title: "..."
+  #   date: "2026-04-15 19:30"
+  #   location: "..."
+  #   description: |
+  #     ...
+  #   featuredGames:
+  #     - "..."
