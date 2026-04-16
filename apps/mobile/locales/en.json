@@ -91,6 +91,17 @@
     "title": "Feed",
     "emptyTitle": "Nothing yet in your feed.",
     "emptyHint": "Log a play, find friends, or join a group.",
+    "discovery": {
+      "heading": "Discover what's happening",
+      "upcomingEvents": "Upcoming events",
+      "openInvitations": "Open game invitations",
+      "marketplace": "Community marketplace",
+      "marketplaceComingSoon": "Coming soon — buy, sell, and trade games with people nearby.",
+      "noEvents": "No upcoming events nearby.",
+      "noInvitations": "No open invitations right now.",
+      "spotsLeft": "{{open}} of {{total}} spots open",
+      "hostedBy": "Hosted by {{name}}"
+    },
     "postType": {
       "PLAY_LOG": "Played",
       "GAME_REVIEW": "Review",

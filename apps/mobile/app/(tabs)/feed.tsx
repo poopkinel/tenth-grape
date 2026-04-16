@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useFeed } from '@/hooks/use-feed';
+import { useFeed, type FeedEmptyState, type OpenInvitation } from '@/hooks/use-feed';
 import { useReact, useUnreact } from '@/hooks/use-posts';
-import type { PostDto } from '@meeple/shared';
+import type { PostDto, EventDto } from '@meeple/shared';
 
 const REACTION_EMOJIS = ['👍', '❤️', '🎲', '☕', '😂', '🎉'];
 
@@ -27,6 +27,8 @@ export default function FeedScreen() {
     () => data?.pages.flatMap((p) => p.items) ?? [],
     [data],
   );
+
+  const emptyState = data?.pages[0]?.emptyState ?? null;
 
   function handleReact(post: PostDto, emoji: string) {
     const current = post.reactions.find((r) => r.mine);
@@ -54,10 +56,14 @@ export default function FeedScreen() {
         onEndReachedThreshold={0.5}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>{t('feed.emptyTitle')}</Text>
-            <Text style={styles.emptyHint}>{t('feed.emptyHint')}</Text>
-          </View>
+          emptyState ? (
+            <DiscoveryView emptyState={emptyState} />
+          ) : (
+            <View style={styles.empty}>
+              <Text style={styles.emptyText}>{t('feed.emptyTitle')}</Text>
+              <Text style={styles.emptyHint}>{t('feed.emptyHint')}</Text>
+            </View>
+          )
         }
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -132,6 +138,104 @@ export default function FeedScreen() {
   );
 }
 
+/**
+ * Empty-state discovery view: shown instead of the barren "nothing here" text
+ * when the user has no posts from friends/groups yet. Surfaces community
+ * events, open game invitations, and the upcoming marketplace.
+ */
+function DiscoveryView({ emptyState }: { emptyState: FeedEmptyState }) {
+  const { t } = useTranslation();
+  const router = useRouter();
+
+  return (
+    <View style={styles.discovery}>
+      <Text style={styles.discoveryHeading}>{t('feed.discovery.heading')}</Text>
+
+      {/* Upcoming events */}
+      <Text style={styles.sectionTitle}>📅 {t('feed.discovery.upcomingEvents')}</Text>
+      {emptyState.events.length === 0 ? (
+        <Text style={styles.sectionEmpty}>{t('feed.discovery.noEvents')}</Text>
+      ) : (
+        emptyState.events.map((ev: EventDto) => {
+          const date = new Date(ev.startAt);
+          return (
+            <TouchableOpacity
+              key={ev.id}
+              style={styles.discoveryCard}
+              onPress={() => router.push(`/event/${ev.id}`)}
+            >
+              <Text style={styles.discoveryCardTitle}>{ev.title}</Text>
+              <Text style={styles.discoveryCardMeta}>
+                {date.toLocaleDateString()} · {ev.locationText}
+              </Text>
+              <Text style={styles.discoveryCardFooter}>
+                {ev.attendeeCount} going
+              </Text>
+            </TouchableOpacity>
+          );
+        })
+      )}
+
+      {/* Open game invitations */}
+      <Text style={styles.sectionTitle}>🎲 {t('feed.discovery.openInvitations')}</Text>
+      {emptyState.openInvitations.length === 0 ? (
+        <Text style={styles.sectionEmpty}>{t('feed.discovery.noInvitations')}</Text>
+      ) : (
+        emptyState.openInvitations.map((inv: OpenInvitation) => {
+          const date = new Date(inv.scheduledAt);
+          const spotsOpen = inv.maxPlayers - inv.accepted;
+          return (
+            <TouchableOpacity
+              key={inv.id}
+              style={styles.discoveryCard}
+              onPress={() => router.push(`/session/${inv.id}`)}
+            >
+              <Text style={styles.discoveryCardTitle}>{inv.title}</Text>
+              <Text style={styles.discoveryCardMeta}>
+                {date.toLocaleDateString()} · {inv.locationText}
+              </Text>
+              {inv.host && (
+                <Text style={styles.discoveryCardMeta}>
+                  {t('feed.discovery.hostedBy', { name: inv.host.name })}
+                </Text>
+              )}
+              {inv.games.length > 0 && (
+                <View style={styles.invGamesRow}>
+                  {inv.games.slice(0, 3).map((g) => (
+                    <View key={g.bggId} style={styles.invGamePill}>
+                      {g.thumbnail ? (
+                        <Image source={{ uri: g.thumbnail }} style={styles.invGameThumb} />
+                      ) : null}
+                      <Text style={styles.invGameText} numberOfLines={1}>
+                        {g.title}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              <Text style={styles.discoverySpots}>
+                {t('feed.discovery.spotsLeft', { open: spotsOpen, total: inv.maxPlayers })}
+              </Text>
+            </TouchableOpacity>
+          );
+        })
+      )}
+
+      {/* Marketplace placeholder */}
+      {emptyState.marketplaceComingSoon && (
+        <>
+          <Text style={styles.sectionTitle}>🏷️ {t('feed.discovery.marketplace')}</Text>
+          <View style={[styles.discoveryCard, styles.comingSoonCard]}>
+            <Text style={styles.comingSoonText}>
+              {t('feed.discovery.marketplaceComingSoon')}
+            </Text>
+          </View>
+        </>
+      )}
+    </View>
+  );
+}
+
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 function formatPostType(type: string, t: TranslateFn): string {
@@ -193,6 +297,42 @@ const styles = StyleSheet.create({
   },
   gameThumb: { width: 24, height: 24, borderRadius: 4 },
   gamePillText: { fontSize: 13, color: '#374151', flexShrink: 1 },
+
+  // ─── Discovery empty-state view ────────────────────────────────────────
+  discovery: { paddingTop: 8 },
+  discoveryHeading: { fontSize: 15, color: '#6b7280', marginBottom: 16, textAlign: 'center' },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111', marginTop: 16, marginBottom: 10 },
+  sectionEmpty: { fontSize: 13, color: '#9ca3af', paddingVertical: 12, paddingHorizontal: 4 },
+  discoveryCard: {
+    backgroundColor: '#f9fafb',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+  },
+  discoveryCardTitle: { fontSize: 15, fontWeight: '700', color: '#111' },
+  discoveryCardMeta: { fontSize: 13, color: '#6b7280', marginTop: 2 },
+  discoveryCardFooter: { fontSize: 13, color: '#2563EB', fontWeight: '600', marginTop: 6 },
+  discoverySpots: { fontSize: 13, color: '#16a34a', fontWeight: '600', marginTop: 8 },
+  invGamesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
+  invGamePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingRight: 8,
+    paddingVertical: 3,
+    paddingLeft: 3,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    maxWidth: 180,
+  },
+  invGameThumb: { width: 22, height: 22, borderRadius: 4 },
+  invGameText: { fontSize: 12, color: '#374151', flexShrink: 1 },
+  comingSoonCard: { backgroundColor: '#fef3c7', borderColor: '#fde68a' },
+  comingSoonText: { fontSize: 13, color: '#92400e', lineHeight: 19 },
 
   reactionsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 },
   reactionBtn: {

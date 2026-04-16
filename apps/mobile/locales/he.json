@@ -91,6 +91,17 @@
     "title": "פיד",
     "emptyTitle": "הפיד שלכם ריק עדיין.",
     "emptyHint": "תעדו משחק, מצאו חברים, או הצטרפו לקבוצה.",
+    "discovery": {
+      "heading": "מה קורה בקהילה",
+      "upcomingEvents": "אירועים קרובים",
+      "openInvitations": "הזמנות פתוחות למשחק",
+      "marketplace": "לוח קהילה",
+      "marketplaceComingSoon": "בקרוב — קניה, מכירה והחלפת משחקים עם חברי הקהילה שבאזור.",
+      "noEvents": "אין אירועים קרובים באזור.",
+      "noInvitations": "אין הזמנות פתוחות כרגע.",
+      "spotsLeft": "{{open}} מתוך {{total}} מקומות פנויים",
+      "hostedBy": "מארח: {{name}}"
+    },
     "postType": {
       "PLAY_LOG": "שיחק",
       "GAME_REVIEW": "ביקורת",

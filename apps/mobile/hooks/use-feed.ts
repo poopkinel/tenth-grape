@@ -1,10 +1,28 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { authedApi } from '@/lib/api';
-import type { PostDto } from '@meeple/shared';
+import type { PostDto, EventDto } from '@meeple/shared';
 
-interface FeedPage {
+export interface OpenInvitation {
+  id: string;
+  title: string;
+  scheduledAt: string;
+  locationText: string;
+  host: { id: string; name: string; avatar: string | null } | null;
+  games: { bggId: number; title: string; thumbnail: string | null }[];
+  accepted: number;
+  maxPlayers: number;
+}
+
+export interface FeedEmptyState {
+  events: EventDto[];
+  openInvitations: OpenInvitation[];
+  marketplaceComingSoon: boolean;
+}
+
+export interface FeedPage {
   items: PostDto[];
   nextCursor: string | null;
+  emptyState: FeedEmptyState | null;
 }
 
 export function useFeed() {
